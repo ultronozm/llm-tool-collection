@@ -30,6 +30,8 @@
 
 ;;; Code:
 
+(require 'seq)
+
 (defvar llm-tool-collection--all-tools nil
   "A list of all tool definition symbols.")
 
@@ -41,7 +43,13 @@
 (defmacro llm-tool-collection-deftool (name &rest specs)
   "Declare a generic LLM tool named NAME.
 The remaining arguments SPECS should be a plist specifying the standard
-attributes of an LLM tool."
+attributes of an LLM tool.
+
+SPECS may also contain extra keywords used by certain clients, such as
+`:include' and `:confirm' for gptel. Conformant clients should ignore
+all unsupported keywords. Tool definitions should contain a `:category'
+value so that `llm-tool-collection-get-category' produces useful
+results."
   (declare (indent defun))
   (let ((sym (llm-tool-collection--name-to-symbol name)))
     `(progn
@@ -61,6 +69,17 @@ function such as `gptel-make-tool' or `llm-make-tool':
   (let ((sym (llm-tool-collection--name-to-symbol name)))
     (symbol-value sym)))
 
+(defun llm-tool-collection-get-category (category)
+  "Return a list of all tool definitions in the collection part of CATEGORY.
+
+Mapping over this list with `gptel-make-tool', `llm-make-tool', or
+similar will add all tools to the respective client:
+
+ (mapcar (apply-partially #'apply #'gptel-make-tool)
+         (llm-tool-collection-get-category \"filesystem))"
+  (seq-filter (lambda (tool) (string= (plist-get tool :category) category))
+              (llm-tool-collection-get-all)))
+
 (defun llm-tool-collection-get-all ()
   "Return a list of all tool definitions in the collection.
 
@@ -79,7 +98,26 @@ similar will add all tools to the respective client:
   :function (lambda (path)
               (with-temp-buffer
                 (insert-file-contents (expand-file-name path))
-                (buffer-string))))
+                (buffer-string)))
+  :category "filesystem"
+  :confirm t
+  :include t)
+
+(llm-tool-collection-deftool "list_directory"
+  :description "List the contents of a specified directory"
+  :args (list '(:name "path"
+                      :type "string"
+                      :description "Path to the directory. Supports relative paths and ~."))
+  :function (lambda (path)
+              (let ((expanded-path (expand-file-name path)))
+                (if (file-directory-p expanded-path)
+                    (string-join `(,(format "Contents of %s:" path)
+                                   ,@(directory-files expanded-path))
+                                 "\n")
+                  (error "%s is not a directory" expanded-path))))
+  :category "filesystem"
+  :confirm t
+  :include t)
 
 (llm-tool-collection-deftool "create_file"
   :description "Create a new file with specified content"
@@ -95,7 +133,9 @@ similar will add all tools to the respective client:
                     (error "File already exists: %s" expanded-path)
                   (with-temp-file expanded-path
                     (insert content))
-                  (format "File created successfully: %s" path)))))
+                  (format "File created successfully: %s" path))))
+  :category "filesystem"
+  :confirm t)
 
 (llm-tool-collection-deftool "create_directory"
   :description "Create a new directory at the specified path"
@@ -107,20 +147,9 @@ similar will add all tools to the respective client:
                 (if (file-exists-p expanded-path)
                     (error "Directory already exists: %s" expanded-path)
                   (make-directory expanded-path t)
-                  (format "Directory created successfully: %s" path)))))
-
-(llm-tool-collection-deftool "list_directory"
-  :description "List the contents of a specified directory"
-  :args (list '(:name "path"
-                      :type "string"
-                      :description "Path to the directory. Supports relative paths and ~."))
-  :function (lambda (path)
-              (let ((expanded-path (expand-file-name path)))
-                (if (file-directory-p expanded-path)
-                    (string-join `(,(format "Contents of %s:" path)
-                                   ,@(directory-files expanded-path))
-                                 "\n")
-                  (error "%s is not a directory" expanded-path)))))
+                  (format "Directory created successfully: %s" path))))
+  :category "filesystem"
+  :confirm t)
 
 (provide 'llm-tool-collection)
 
