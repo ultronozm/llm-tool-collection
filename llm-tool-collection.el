@@ -30,24 +30,47 @@
 
 ;;; Code:
 
+(defvar llm-tool-collection--all-tools nil
+  "A list of all tool definition symbols.")
+
+(defun llm-tool-collection--name-to-symbol (name)
+  "Convert tool NAME into a namespaced symbol."
+  (intern (concat "llm-tool-collection-tool-"
+                  (string-replace "_" "-" name))))
+
 (defmacro llm-tool-collection-deftool (name &rest specs)
   "Declare a generic LLM tool named NAME.
 The remaining arguments SPECS should be a plist specifying the standard
 attributes of an LLM tool."
   (declare (indent defun))
-  `(defconst ,(intern (concat "llm-tool-collection-tool-"
-                              (string-replace "_" "-" name)))
-     (:name ,name
-            ,@specs)))
+  (let ((sym (llm-tool-collection--name-to-symbol name)))
+    `(progn
+       (defconst ,sym
+         '(:name ,name
+                 ,@specs))
+       (push ',sym llm-tool-collection--all-tools))))
+
+(defun llm-tool-collection-get (name)
+  "Return the specification for tool NAME.
+NAME should be the string name given in the tool specification."
+  (let ((sym (llm-tool-collection--name-to-symbol name)))
+    (symbol-value sym)))
+
+(defun llm-tool-collection-get-all ()
+  "Return a list of all tool definitions in the collection.
+
+Mapping over this list with `gptel-make-tool', `llm-make-tool', or
+similar will add all tools to the respective client:
+
+ (mapcar (apply-partially #'apply #'gptel-make-tool)
+         (llm-tool-collection-get-all))"
+  (mapcar #'symbol-value llm-tool-collection--all-tools))
 
 (llm-tool-collection-deftool "read_file"
   :description "Read the contents of a file"
   :args (list '(:name "path"
                       :type "string"
                       :description "Path to the file to read. Supports relative paths and ~."))
-  :category "filesystem"
-  :include t
-  :confirm t
   :function (lambda (path)
               (with-temp-buffer
                 (insert-file-contents (expand-file-name path))
