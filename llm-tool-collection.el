@@ -52,7 +52,12 @@ attributes of an LLM tool."
 
 (defun llm-tool-collection-get (name)
   "Return the specification for tool NAME.
-NAME should be the string name given in the tool specification."
+NAME should be the string name given in the tool specification.
+
+The return value can be passed directly to a compatible LLM client
+function such as `gptel-make-tool' or `llm-make-tool':
+
+ (apply #'gptel-make-tool (llm-tool-collection-get \"read_file\"))"
   (let ((sym (llm-tool-collection--name-to-symbol name)))
     (symbol-value sym)))
 
