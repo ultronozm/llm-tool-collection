@@ -109,53 +109,53 @@ similar will add all tools to the respective client:
     (insert-file-contents (expand-file-name path))
     (buffer-string)))
 
-(llm-tool-collection-deftool "list_directory"
-  :description "List the contents of a specified directory"
-  :args (list '(:name "path"
-                      :type "string"
-                      :description "Path to the directory. Supports relative paths and ~."))
-  :function (lambda (path)
-              (let ((expanded-path (expand-file-name path)))
-                (if (file-directory-p expanded-path)
-                    (string-join `(,(format "Contents of %s:" path)
-                                   ,@(directory-files expanded-path))
-                                 "\n")
-                  (error "%s is not a directory" expanded-path))))
-  :category "filesystem"
-  :confirm t
-  :include t)
+(llm-tool-collection-deftool list-directory
+  (:description "List the contents of a specified directory."
+                :args (list '(:name "path"
+                                    :type "string"
+                                    :description "Path to the directory. Supports relative paths and ~."))
+                :category "filesystem"
+                :confirm t
+                :include t)
+  (path)
+  (let ((expanded-path (expand-file-name path)))
+    (if (file-directory-p expanded-path)
+        (string-join `(,(format "Contents of %s:" path)
+                       ,@(directory-files expanded-path))
+                     "\n")
+      (error "%s is not a directory" expanded-path))))
 
-(llm-tool-collection-deftool "create_file"
-  :description "Create a new file with specified content"
-  :args (list '(:name "path"
-                      :type "string"
-                      :description "Path to the new file. Supports relative paths and ~.")
-              '(:name "content"
-                      :type "string"
-                      :description "Content to write to the file"))
-  :function (lambda (path content)
-              (let ((expanded-path (expand-file-name path)))
-                (if (file-exists-p expanded-path)
-                    (error "File already exists: %s" expanded-path)
-                  (with-temp-file expanded-path
-                    (insert content))
-                  (format "File created successfully: %s" path))))
-  :category "filesystem"
-  :confirm t)
+(llm-tool-collection-deftool create-file
+  (:description "Create a new file with specified content."
+                :args (list '(:name "path"
+                                    :type "string"
+                                    :description "Path to the new file. Supports relative paths and ~.")
+                            '(:name "content"
+                                    :type "string"
+                                    :description "Content to write to the file."))
+                :category "filesystem"
+                :confirm t)
+  (path content)
+  (let ((expanded-path (expand-file-name path)))
+    (if (file-exists-p expanded-path)
+        (error "File already exists: %s" expanded-path)
+      (with-temp-file expanded-path
+        (insert content))
+      (format "File created successfully: %s" path))))
 
-(llm-tool-collection-deftool "create_directory"
-  :description "Create a new directory at the specified path"
-  :args (list '(:name "path"
-                      :type "string"
-                      :description "Path to the new directory. Supports relative paths and ~."))
-  :function (lambda (path)
-              (let ((expanded-path (expand-file-name path)))
-                (if (file-exists-p expanded-path)
-                    (error "Directory already exists: %s" expanded-path)
-                  (make-directory expanded-path t)
-                  (format "Directory created successfully: %s" path))))
-  :category "filesystem"
-  :confirm t)
+(llm-tool-collection-deftool create-directory
+  (:description "Create a new directory at the specified path."
+                :args (list '(:name "path"
+                                    :type "string"
+                                    :description "Path to the new directory. Supports relative paths and ~."))
+                :category "filesystem"
+                :confirm t)
+  (path)
+  (let ((expanded-path (expand-file-name path)))
+    (if (file-exists-p expanded-path)
+        (error "Directory already exists: %s" expanded-path)
+      (make-directory expanded-path t)
+      (format "Directory created successfully: %s" path))))
 
 (provide 'llm-tool-collection)
 
