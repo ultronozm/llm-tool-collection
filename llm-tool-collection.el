@@ -31,6 +31,7 @@
 ;;; Code:
 
 (require 'seq)
+(require 'cl-lib)
 
 (defvar llm-tool-collection--all-tools nil
   "A list of all tool definition symbols.")
@@ -103,7 +104,6 @@ function under `llm-tc/NAME' whose docstring is the value of the spec
            ,@body)
          (push ',sym llm-tool-collection--all-tools)))))
 
-
 (defun llm-tool-collection-get-category (category)
   "Return a list of all tool definitions in the collection part of CATEGORY.
 
@@ -124,6 +124,14 @@ similar will add all tools to the respective client:
  (mapcar (apply-partially #'apply #'gptel-make-tool)
          (llm-tool-collection-get-all))"
   (mapcar #'symbol-value llm-tool-collection--all-tools))
+
+;;;###autoload
+(cl-pushnew (list "LLM Tools"
+                  (concat "^\\s-*("
+                          (regexp-opt '("llm-tool-collection-deftool") t)
+                          "\\s-+\\(" lisp-mode-symbol-regexp "\\)")
+                  2)
+            lisp-imenu-generic-expression :test #'equal)
 
 (llm-tool-collection-deftool read-file
   (:description
