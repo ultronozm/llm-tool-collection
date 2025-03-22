@@ -82,7 +82,7 @@ function under `llm-tc/NAME' whose docstring is the value of the spec
         (let ((argname (car arg))
               (argrest (cdr arg)))
           (push argname arg-syms)
-          (push `(:name ,(symbol-name argname)
+          (push `(:name ,(llm-tool-collection--make-llm-name argname)
                         ,@(when optional '(:optional t))
                         ,@argrest)
                 arg-specs))))
