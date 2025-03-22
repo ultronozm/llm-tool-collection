@@ -36,13 +36,14 @@
 (defvar llm-tool-collection--all-tools nil
   "A list of all tool definition symbols.")
 
-(defun llm-tool-collection--name-to-symbol (name)
-  "Convert tool NAME into a namespaced symbol by prepending `llm-tc/'."
-  (intern (concat "llm-tc/" (symbol-name name))))
+(eval-and-compile
+  (defun llm-tool-collection--name-to-symbol (name)
+    "Convert tool NAME into a namespaced symbol by prepending `llm-tc/'."
+    (intern (concat "llm-tc/" (symbol-name name))))
 
-(defun llm-tool-collection--make-llm-name (name)
-  "Replace dashes with underscores to make tool NAME LLM-friendly."
-  (string-replace "-" "_" (symbol-name name)))
+  (defun llm-tool-collection--make-llm-name (name)
+    "Replace dashes with underscores to make tool NAME LLM-friendly."
+    (string-replace "-" "_" (symbol-name name))))
 
 (defmacro llm-tool-collection-deftool (name specs args &rest body)
   "Declare a generic LLM tool named NAME.
@@ -52,8 +53,8 @@ it is not set, the NAME argument (with dashes replaced with underscores)
 will be used by default.
 
 SPECS may also contain extra keywords used by certain clients, such as
-`:include' and `:confirm' for gptel. Conformant clients should ignore
-all unsupported keywords. Tool definitions should contain a `:category'
+`:include' and `:confirm' for gptel.  Conformant clients should ignore
+all unsupported keywords.  Tool definitions should contain a `:category'
 value and a list of symbols for `:tags' to make it convenient for users
 to select tools.
 
@@ -90,11 +91,11 @@ function under `llm-tc/NAME' whose docstring is the value of the spec
     (setq arg-syms (reverse arg-syms)
           arg-specs (reverse arg-specs))
     (let* ((sym (llm-tool-collection--name-to-symbol name))
-           (name (unless (plist-get specs :name)
-                   `(:name ,(llm-tool-collection--make-llm-name name)))))
+           (name-spec (unless (plist-get specs :name)
+                        `(:name ,(llm-tool-collection--make-llm-name name)))))
       `(progn
          (defconst ,sym
-           '(,@name
+           '(,@name-spec
              ,@specs
              :args ,arg-specs
              :function #',sym))
@@ -104,24 +105,26 @@ function under `llm-tc/NAME' whose docstring is the value of the spec
            ,@body)
          (cl-pushnew ',sym llm-tool-collection--all-tools)))))
 
+;;;###autoload
 (defun llm-tool-collection-get-category (category)
   "Return a list of all tool definitions in the collection part of CATEGORY.
 
 Mapping over this list with `gptel-make-tool', `llm-make-tool', or
 similar will add all tools to the respective client:
 
- (mapcar (apply-partially #'apply #'gptel-make-tool)
+ (mapcar (apply-partially #\\='apply #\\='gptel-make-tool)
          (llm-tool-collection-get-category \"filesystem\"))"
   (seq-filter (lambda (tool) (string= (plist-get tool :category) category))
               (llm-tool-collection-get-all)))
 
+;;;###autoload
 (defun llm-tool-collection-get-all ()
   "Return a list of all tool definitions in the collection.
 
 Mapping over this list with `gptel-make-tool', `llm-make-tool', or
 similar will add all tools to the respective client:
 
- (mapcar (apply-partially #'apply #'gptel-make-tool)
+ (mapcar (apply-partially #\\='apply #\\='gptel-make-tool)
          (llm-tool-collection-get-all))"
   (mapcar #'symbol-value llm-tool-collection--all-tools))
 
@@ -198,8 +201,10 @@ LIMIT specifies the maximum number of lines to return."
                 :category "buffers")
   ((buffer-name :type string :description "Name of the buffer to view.")
    &optional
-   (offset :type integer :description "Line number to start reading from (0-based).")
-   (limit :type integer :description "Maximum number of lines to return."))
+   (offset
+    :type integer :description "Line number to start reading from (0-based).")
+   (limit
+    :type integer :description "Maximum number of lines to return."))
   (with-current-buffer buffer-name
     (let* ((lines (split-string (buffer-string) "\n"))
            (total-lines (length lines))
