@@ -277,6 +277,31 @@ LIMIT specifies the maximum number of lines to return."
            (selected-lines (seq-subseq lines start end)))
       (string-join selected-lines "\n"))))
 
+(llm-tool-collection-deftool edit-buffer
+  (:category "buffers")
+  ((buffer-name "Name of the buffer to modify" :type string)
+   (old-string "Text to replace (must match exactly)" :type string)
+   (new-string "Text to replace old_string with" :type string))
+  "Edits Emacs buffers"
+  (with-current-buffer buffer-name
+    (let ((case-fold-search nil))
+      (save-excursion
+        (goto-char (point-min))
+        (let ((count 0))
+          (while (search-forward old-string nil t)
+            (setq count (1+ count)))
+          (if (= count 0)
+              (format
+               "Error: Could not find text to replace in buffer %s" buffer-name)
+            (if (> count 1)
+                (format
+                 "Error: Found %d matches for the text to replace in buffer %s"
+                 count buffer-name)
+              (goto-char (point-min))
+              (search-forward old-string)
+              (replace-match new-string t t)
+              (format "Successfully edited buffer %s" buffer-name))))))))
+
 (provide 'llm-tool-collection)
 
 ;;; llm-tool-collection.el ends here
