@@ -52,23 +52,63 @@ Each function is called with one argument, the tool's plist definition.")
 (defmacro llm-tool-collection-deftool (name description specs args &rest body)
   "Declare a generic LLM tool named NAME.
 DESCRIPTION is the tool's documentation string.
+
 SPECS should be a plist specifying the standard attributes of an LLM
-tool.  The `:name' attribute should be set to an LLM-friendly name.  If
-it is not set, the NAME argument (with dashes replaced with underscores)
+tool.  The :name attribute should be set to an LLM-friendly name.  If it
+is not set, the NAME argument (with dashes replaced with underscores)
 will be used by default.
 
 SPECS may also contain extra keywords used by certain clients, such as
-`:include' and `:confirm' for gptel.  Conformant clients should ignore
-all unsupported keywords.  Tool definitions should contain a `:category'
-value and a list of symbols for `:tags' to make it convenient for users
-to select tools.
+:include and :confirm for gptel.  Conformant clients should ignore all
+unsupported keywords.  Tool definitions should contain a :category value
+and a list of symbols for :tags to make it convenient for users to
+select tools.
 
 ARGS is a list where each element is of the form
 
   (ARGNAME \"DESCRIPTION\" :type TYPE [...]).
 
-Arguments after the special symbol `&optional' are marked with
-`:optional t`.
+Arguments after the special symbol `&optional' are marked as optional.
+TYPE and further properties [...] can include:
+
+- :type.  Required.  One of the symbols string, number, integer,
+  boolean, array, object, or null.
+
+- :enum.  For enumerated types, a vector of strings representing allowed
+  values.  Note that :type is still required even with enums.
+
+- :items.  Required if :type is array.  Must be a plist including at
+  least the item's :type.
+
+- :properties.  Required if :type is object.  Must be a plist that can
+  be serialized into a JSON object specification via `json-serialize',
+  with the exception that :type specifications in this plist must be
+  symbols.
+
+- :required.  For object types, a vector of strings listing required
+  object keys.
+
+For example, a weather tool might have ARGS defined as:
+
+  ((location \"The city and state, e.g. San Francisco, CA\" :type string)
+   &optional
+   (unit \"The unit of temperature, either 'celsius' or 'fahrenheit'\"
+         :type string
+         :enum [\"celsius\" \"fahrenheit\"]))
+
+This would translate to a tool specification, in the sense described at
+URL
+`https://github.com/ahyatt/llm/discussions/124#discussioncomment-11877109',
+with args:
+
+  ((:name \"location\"
+    :type string
+    :description \"The city and state, e.g. San Francisco, CA\")
+   (:name \"unit\"
+    :type string
+    :enum [\"celsius\" \"fahrenheit\"]
+    :description \"The unit of temperature, either 'celsius' or 'fahrenheit'\"
+    :optional t))
 
 BODY contains the function body.
 
