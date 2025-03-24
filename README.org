@@ -1,0 +1,67 @@
+#+title: LLM Tool Collection
+#+author: Ad <me@skissue.xyz>
+
+A crowdsourced collection of tools to empower Large Language Models in Emacs.
+
+* Table of Contents
+:PROPERTIES:
+:TOC:      :include all :depth 3 :force (nothing) :ignore (this) :local (nothing)
+:END:
+:CONTENTS:
+- [[#installation][Installation]]
+- [[#usage][Usage]]
+- [[#provided-tools][Provided Tools]]
+- [[#contributing][Contributing]]
+:END:
+
+* Installation
+This package is not yet in any repositories. Install it with your favorite from-Git method!
+
+Quick and dirty: clone the repository and add it to ~load-path~.
+#+begin_src elisp
+  (add-to-list 'load-path "/path/to/llm-tool-collection/")
+  (require 'llm-tool-collection)
+#+end_src
+
+* Usage
+Quick and dirty: register every tool.
+#+begin_src elisp
+  ;; For gptel:
+  (mapcar (apply-partially #'apply #'gptel-make-tool)
+          (llm-tool-collection-get-all))
+
+  ;; For llm:
+  (mapcar (apply-partially #'apply #'llm-make-tool)
+          (llm-tool-collection-get-all))
+#+end_src
+
+Every tool is defined with a symbol =llm-tc/tool-name= that has both a variable value and a function value. The variable value contains the tool specification, which can be passed to any compliant Emacs LLM client. The function value contains the function that runs the given tool. This can be instrumented or run manually.
+
+To register just one tool:
+#+begin_src elisp
+  ;; For gptel:
+  (apply #'gptel-make-tool llm-tc/list-directory)
+
+  ;; For llm:
+  (apply #'llm-make-tool llm-tc/list-directory)
+#+end_src
+
+Use ~llm-tool-collection-get-category~ to map over a list of tools pertaining to a specific task.
+#+begin_src elisp
+  ;; For gptel:
+  (mapcar (apply-partially #'apply #'gptel-make-tool)
+          (llm-tool-collection-get-category "filesystem"))
+
+  ;; For llm:
+  (mapcar (apply-partially #'apply #'llm-make-tool)
+          (llm-tool-collection-get-category "filesystem"))
+
+#+end_src
+
+See [[#provided-tools][Provided Tools]] for a list of tool names, descriptions, and categories.
+
+* Provided Tools
+# TODO
+
+* Contributing
+Contributions to this project are welcome and encouraged! After all, this collection can't be crowdsourced if there's no crowd 🙃.
