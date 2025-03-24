@@ -49,20 +49,30 @@
   "Functions called after defining a new LLM tool.
 Each function is called with one argument, the tool's plist definition.")
 
-(defmacro llm-tool-collection-deftool (name description specs args &rest body)
+(defmacro llm-tool-collection-deftool (name specs args description &rest body)
   "Declare a generic LLM tool named NAME.
-DESCRIPTION is the tool's documentation string.
 
 SPECS should be a plist specifying the standard attributes of an LLM
-tool.  The :name attribute should be set to an LLM-friendly name.  If it
-is not set, the NAME argument (with dashes replaced with underscores)
-will be used by default.
+tool:
 
-SPECS may also contain extra keywords used by certain clients, such as
-:include and :confirm for gptel.  Conformant clients should ignore all
-unsupported keywords.  Tool definitions should contain a :category value
-and a list of symbols for :tags to make it convenient for users to
-select tools.
+- :name.  The LLM-friendly name for the tool.  If not set, the NAME
+  argument (with dashes replaced with underscores) will be used by
+  default.
+
+- :category.  Required.  A string categorizing the tool, such as
+  \"filesystem\", \"buffers\", \"system\".
+
+- :tags.  A list of symbols for tagging the tool to enable more precise
+  filtering.
+
+SPECS may also contain other extra keywords used by specific clients.
+Conformant clients should ignore all unsupported keywords.  Examples:
+
+- :confirm.  Boolean flag to indicate whether user confirmation should
+  be requested before executing the tool (used by `gptel').
+
+- :include.  Boolean flag to indicate whether the tool result should be
+  included as part of the LLM output (used by `gptel').
 
 ARGS is a list where each element is of the form
 
@@ -110,6 +120,8 @@ with args:
     :description \"The unit of temperature, either 'celsius' or 'fahrenheit'\"
     :optional t))
 
+DESCRIPTION is the tool's documentation string.
+
 BODY contains the function body.
 
 This macro creates a constant with the tool's specs and defines a
@@ -119,7 +131,7 @@ and `llm-tool-collection-get-category', and any functions in
 `llm-tool-collection-post-define-functions' are called with the tool's
 spec as their argument."
   (declare (indent defun)
-           (debug (&define symbolp stringp sexp sexp def-body)))
+           (debug (&define symbolp sexp sexp stringp def-body)))
   (let* ((optional nil)
          (arg-syms '())
          (arg-specs '()))
@@ -204,19 +216,19 @@ similar will add all tools to the respective client:
 ;;; Tools
 
 (llm-tool-collection-deftool read-file
-  "Read the contents of a file and return its content as a string."
   (:category "filesystem" :confirm t :include t)
   ((path "Path to the file to read. Supports relative paths and '~'."
          :type string))
+  "Read the contents of a file and return its content as a string."
   (with-temp-buffer
     (insert-file-contents (expand-file-name path))
     (buffer-string)))
 
 (llm-tool-collection-deftool list-directory
-  "List the contents of a specified directory."
   (:category "filesystem" :confirm t :include t)
   ((path "Path to the directory. Supports relative paths and '~'."
          :type string))
+  "List the contents of a specified directory."
   (let ((expanded-path (expand-file-name path)))
     (if (file-directory-p expanded-path)
         (string-join `(,(format "Contents of %s:" path)
@@ -225,10 +237,10 @@ similar will add all tools to the respective client:
       (error "%s is not a directory" expanded-path))))
 
 (llm-tool-collection-deftool create-file
-  "Create a new file with the specified content if it does not already exist."
   (:category "filesystem" :confirm t)
   ((path "Path to the new file. Supports relative paths and '~'." :type string)
    (content "Content to write to the file." :type string))
+  "Create a new file with the specified content if it does not already exist."
   (let ((expanded-path (expand-file-name path)))
     (if (file-exists-p expanded-path)
         (error "File already exists: %s" expanded-path)
@@ -237,11 +249,11 @@ similar will add all tools to the respective client:
       (format "File created successfully: %s" path))))
 
 (llm-tool-collection-deftool create-directory
-  "Create a new directory at the specified path if it does not already
-exist."
   (:category "filesystem" :confirm t)
   ((path "Path to the new directory. Supports relative paths and '~'."
          :type string))
+  "Create a new directory at the specified path if it does not already
+exist."
   (let ((expanded-path (expand-file-name path)))
     (if (file-exists-p expanded-path)
         (error "Directory already exists: %s" expanded-path)
@@ -249,14 +261,14 @@ exist."
       (format "Directory created successfully: %s" path))))
 
 (llm-tool-collection-deftool view-buffer
-  "View contents of BUFFER-NAME with optional OFFSET and LIMIT.
-OFFSET specifies the starting line (0-based).
-LIMIT specifies the maximum number of lines to return."
   (:category "buffers")
   ((buffer-name "Name of the buffer to view." :type string)
    &optional
    (offset "Line number to start reading from (0-based)." :type integer)
    (limit "Maximum number of lines to return." :type integer))
+  "View contents of BUFFER-NAME with optional OFFSET and LIMIT.
+OFFSET specifies the starting line (0-based).
+LIMIT specifies the maximum number of lines to return."
   (with-current-buffer buffer-name
     (let* ((lines (split-string (buffer-string) "\n"))
            (total-lines (length lines))
