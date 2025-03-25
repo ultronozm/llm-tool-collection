@@ -55,23 +55,25 @@ Each function is called with one argument, the tool's plist definition.")
 SPECS should be a plist specifying the standard attributes of an LLM
 tool:
 
-- :name.  The LLM-friendly name for the tool.  If not set, the NAME
+- :name. The LLM-friendly name for the tool. If not set, the NAME
   argument (with dashes replaced with underscores) will be used by
   default.
 
-- :category.  Required.  A string categorizing the tool, such as
+- :category. Required. A string categorizing the tool, such as
   \"filesystem\", \"buffers\", \"system\".
 
-- :tags.  A list of symbols for tagging the tool to enable more precise
-  filtering.
+- :tags. A list of symbols for tagging the tool to enable more precise
+  filtering. These can be arbitrary symbols, such as `buffers',
+  `introspection', `programming', `editing'.
 
 SPECS may also contain other extra keywords used by specific clients.
-Conformant clients should ignore all unsupported keywords.  Examples:
+Conformant clients should ignore all unsupported keywords. Recommended
+examples:
 
-- :confirm.  Boolean flag to indicate whether user confirmation should
-  be requested before executing the tool (used by `gptel').
+- :confirm. Boolean flag to indicate whether user confirmation should be
+  requested before executing the tool (used by `gptel').
 
-- :include.  Boolean flag to indicate whether the tool result should be
+- :include. Boolean flag to indicate whether the tool result should be
   included as part of the LLM output (used by `gptel').
 
 ARGS is a list where each element is of the form
@@ -81,21 +83,20 @@ ARGS is a list where each element is of the form
 Arguments after the special symbol `&optional' are marked as optional.
 TYPE and further properties [...] can include:
 
-- :type.  Required.  One of the symbols string, number, integer,
-  boolean, array, object, or null.
+- :type. Required. One of the symbols string, number, integer, boolean,
+  array, object, or null.
 
-- :enum.  For enumerated types, a vector of strings representing allowed
-  values.  Note that :type is still required even with enums.
+- :enum. For enumerated types, a vector of strings representing allowed
+  values. Note that :type is still required even with enums.
 
-- :items.  Required if :type is array.  Must be a plist including at
-  least the item's :type.
+- :items. Required if :type is array. Must be a plist including at least
+  the item's :type.
 
-- :properties.  Required if :type is object.  Must be a plist that can
-  be serialized into a JSON object specification via `json-serialize',
-  with the exception that :type specifications in this plist must be
-  symbols.
+- :properties. Required if :type is object. Must be a plist that can be
+  serialized into a JSON object specification via `json-serialize', with
+  the exception that :type specifications in this plist must be symbols.
 
-- :required.  For object types, a vector of strings listing required
+- :required. For object types, a vector of strings listing required
   object keys.
 
 For example, a weather tool might have ARGS defined as:
@@ -107,7 +108,7 @@ For example, a weather tool might have ARGS defined as:
          :enum [\"celsius\" \"fahrenheit\"]))
 
 This would translate to a tool specification, in the sense described at
-URL
+the URL
 `https://github.com/ahyatt/llm/discussions/124#discussioncomment-11877109',
 with args:
 
@@ -124,12 +125,12 @@ DESCRIPTION is the tool's documentation string.
 
 BODY contains the function body.
 
-This macro creates a constant with the tool's specs and defines a
-function under `llm-tc/NAME' whose docstring is DESCRIPTION.  After the
-tool is defined, it is made available via `llm-tool-collection-get-all'
-and `llm-tool-collection-get-category', and any functions in
-`llm-tool-collection-post-define-functions' are called with the tool's
-spec as their argument."
+This macro defines a constant with the tool's specs and a function whose
+docstring is DESCRIPTION with the tool's body under `llm-tc/NAME'. After
+the tool is defined, it is additionally made available via
+`llm-tool-collection-get-all' and `llm-tool-collection-get-category',
+and all functions in `llm-tool-collection-post-define-functions' are
+called with the tool's spec as their argument."
   (declare (indent defun)
            (debug (&define symbolp sexp sexp stringp def-body)))
   (let* ((optional nil)
