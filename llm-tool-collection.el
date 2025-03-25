@@ -229,7 +229,7 @@ similar will add all tools to the respective client:
 ;;; Tools
 
 (llm-tool-collection-deftool read-file
-  (:category "filesystem" :confirm t :include t)
+  (:category "filesystem" :tags (filesystem editing) :confirm t :include t)
   ((path "Path to the file to read. Supports relative paths and '~'."
          :type string))
   "Read the contents of a file and return its content as a string."
@@ -238,7 +238,7 @@ similar will add all tools to the respective client:
     (buffer-string)))
 
 (llm-tool-collection-deftool list-directory
-  (:category "filesystem" :confirm t :include t)
+  (:category "filesystem" :tags (filesystem) :confirm t :include t)
   ((path "Path to the directory. Supports relative paths and '~'."
          :type string))
   "List the contents of a specified directory."
@@ -250,7 +250,7 @@ similar will add all tools to the respective client:
       (error "%s is not a directory" expanded-path))))
 
 (llm-tool-collection-deftool create-file
-  (:category "filesystem" :confirm t)
+  (:category "filesystem" :tags (filesystem editing) :confirm t)
   ((path "Path to the new file. Supports relative paths and '~'." :type string)
    (content "Content to write to the file." :type string))
   "Create a new file with the specified content if it does not already exist."
@@ -262,7 +262,7 @@ similar will add all tools to the respective client:
       (format "File created successfully: %s" path))))
 
 (llm-tool-collection-deftool create-directory
-  (:category "filesystem" :confirm t)
+  (:category "filesystem" :tags (filesystem) :confirm t)
   ((path "Path to the new directory. Supports relative paths and '~'."
          :type string))
   "Create a new directory at the specified path if it does not already
@@ -274,7 +274,7 @@ exist."
       (format "Directory created successfully: %s" path))))
 
 (llm-tool-collection-deftool view-buffer
-  (:category "buffers")
+  (:category "buffers" :tags (buffers editing))
   ((buffer-name "Name of the buffer to view." :type string)
    &optional
    (offset "Line number to start reading from (0-based)." :type integer)
@@ -291,7 +291,7 @@ LIMIT specifies the maximum number of lines to return."
       (string-join selected-lines "\n"))))
 
 (llm-tool-collection-deftool edit-buffer
-  (:category "buffers")
+  (:category "buffers" :tags (buffers editing))
   ((buffer-name "Name of the buffer to modify" :type string)
    (old-string "Text to replace (must match exactly)" :type string)
    (new-string "Text to replace old_string with" :type string))
