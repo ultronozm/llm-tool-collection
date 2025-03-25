@@ -183,6 +183,18 @@ similar will add all tools to the respective client:
               (llm-tool-collection-get-all)))
 
 ;;;###autoload
+(defun llm-tool-collection-get-tag (tag)
+  "Return a list of all tool definitions in the collection tagged with TAG.
+
+Mapping over this list with `gptel-make-tool', `llm-make-tool', or
+similar will add all tools to the respective client:
+
+ (mapcar (apply-partially #\\='apply #\\='gptel-make-tool)
+         (llm-tool-collection-get-tag \\='buffer))"
+  (seq-filter (lambda (tool) (memq tag (plist-get tool :tags)))
+              (llm-tool-collection-get-all)))
+
+;;;###autoload
 (defun llm-tool-collection-get-all ()
   "Return a list of all tool definitions in the collection.
 
