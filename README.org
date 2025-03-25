@@ -58,6 +58,17 @@ Use ~llm-tool-collection-get-category~ to map over a list of tools pertaining to
 
 #+end_src
 
+Use ~llm-tool-collection-get-tag~ to map over a list of tools with a specific tag.
+#+begin_src elisp
+  ;; For gptel:
+  (mapcar (apply-partially #'apply #'gptel-make-tool)
+          (llm-tool-collection-get-tag 'editing))
+
+  ;; For llm:
+  (mapcar (apply-partially #'apply #'llm-make-tool)
+          (llm-tool-collection-get-tag 'editing))
+#+end_src
+
 See [[#provided-tools][Provided Tools]] for a list of tool names, descriptions, and categories.
 
 * Provided Tools
