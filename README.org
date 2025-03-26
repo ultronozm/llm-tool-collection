@@ -11,6 +11,12 @@ A crowdsourced collection of tools to empower Large Language Models in Emacs.
 - [[#installation][Installation]]
 - [[#usage][Usage]]
 - [[#provided-tools][Provided Tools]]
+  - [[#read-file][read-file]]
+  - [[#list-directory][list-directory]]
+  - [[#create-file][create-file]]
+  - [[#create-directory][create-directory]]
+  - [[#view-buffer][view-buffer]]
+  - [[#edit-buffer][edit-buffer]]
 - [[#contributing][Contributing]]
   - [[#faster-iteration][Faster Iteration]]
 :END:
@@ -73,7 +79,41 @@ Use ~llm-tool-collection-get-tag~ to map over a list of tools with a specific ta
 See [[#provided-tools][Provided Tools]] for a list of tool names, descriptions, and categories.
 
 * Provided Tools
-# TODO
+** read-file
++ Author :: @skissue
++ Tags :: filesystem, editing
+
+Allows the LLM to open a file and read its contents.
+
+** list-directory
++ Author :: @skissue
++ Tags :: filesystem
+
+Allows the LLM to list the contents of a directory.
+
+** create-file
++ Author :: @skissue
++ Tags :: filesystem, editing
+
+Allows the LLM to create a new file with specified content. Returns an error if the file already exists.
+
+** create-directory
++ Author :: @skissue
++ Tags :: filesystem
+
+Allows the LLM to create a new directory. Returns an error if the directory already exists.
+
+** view-buffer
++ Author :: @ultronozm
++ Tags :: buffers, editing
+
+Allows the LLM to view the contents of a buffer. The LLM can optionally specify a line offset to start from, as well as a limit on the number of lines to return.
+
+** edit-buffer
++ Author :: @ultronozm
++ Tags :: buffers, editing
+
+Allows the LLM to edit a buffer by replacing a search string with a replacement string. Returns an error if the text to replace is not found or is found multiple times.
 
 * Contributing
 Contributions to this project are welcome and encouraged! After all, this collection can't be crowdsourced if there's no crowd 🙃.
