@@ -76,3 +76,28 @@ See [[#provided-tools][Provided Tools]] for a list of tool names, descriptions, 
 
 * Contributing
 Contributions to this project are welcome and encouraged! After all, this collection can't be crowdsourced if there's no crowd 🙃.
+
+To write a new tool, use the ~llm-tool-collection-deftool~ macro. For details on its usage, see its docstring as well as the existing tools.
+
+#+begin_src elisp
+  (llm-tool-collection-deftool read-file ; Tool name
+    ;; Specs
+    (:category "filesystem" :tags (filesystem editing) :confirm t :include t)
+    ;; Arguments, with LLM-friendly documentation and types
+    ((path "Path to the file to read. Supports relative paths and '~'."
+           :type string))
+    ;; LLM-friendly tool documentation
+    "Read the contents of a file and return its content as a string."
+    ;; Implementation body
+    (with-temp-buffer
+      (insert-file-contents (expand-file-name path))
+      (buffer-string)))
+#+end_src
+
+It's highly recommended to include ~:tags~, as well as appropriate values for the ~:confirm~ and ~:include~ parameters, depending on how dangerous the tool may be. Additionally, docstrings should be as LLM-friendly; consider instructing models on when to call a tool, and what tools it may want to chain together.
+
+After defining a tool, make sure to add it to the README! Use the existing documentation structure as an example.
+
+For non-trivial/complex tools, it's recommended to include a short screencast or demo of the tool in action. If able to test, also consider adding a note on which models tend to perform the best with the tool.
+
+When ready, submit a PR!
