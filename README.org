@@ -12,6 +12,7 @@ A crowdsourced collection of tools to empower Large Language Models in Emacs.
 - [[#usage][Usage]]
 - [[#provided-tools][Provided Tools]]
 - [[#contributing][Contributing]]
+  - [[#faster-iteration][Faster Iteration]]
 :END:
 
 * Installation
@@ -101,3 +102,22 @@ After defining a tool, make sure to add it to the README! Use the existing docum
 For non-trivial/complex tools, it's recommended to include a short screencast or demo of the tool in action. If able to test, also consider adding a note on which models tend to perform the best with the tool.
 
 When ready, submit a PR!
+
+** Faster Iteration
+There will likely be many iterations necessary to get a tool to a good state. To speed up the feedback loop, functions to immediately update the tools in an LLM interface can be added to ~llm-tool-collection-post-define-functions~. For example, to immediately add (or re-add) a tool to [[https://github.com/karthink/gptel/][gptel]] upon re-evaluating the definition:
+
+#+begin_src elisp
+  (defun llm-tool-collection-register-with-gptel (tool-spec)
+    "Register a tool defined by TOOL-SPEC with gptel.
+  TOOL-SPEC is a plist that can be passed to `gptel-make-tool'."
+    (let ((tool (apply #'gptel-make-tool tool-spec)))
+      (setq gptel-tools
+            (cons tool (seq-remove
+                        (lambda (existing)
+                          (string= (gptel-tool-name existing)
+                                   (gptel-tool-name tool)))
+                        gptel-tools)))))
+
+  (add-hook 'llm-tool-collection-post-define-functions
+            #'llm-tool-collection-register-with-gptel)
+#+end_src
