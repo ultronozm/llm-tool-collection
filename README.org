@@ -5,18 +5,14 @@ A crowdsourced collection of tools to empower Large Language Models in Emacs.
 
 * Table of Contents
 :PROPERTIES:
-:TOC:      :include all :depth 3 :force (nothing) :ignore (this) :local (nothing)
+:TOC:      :include all :depth 2 :force (nothing) :ignore (this) :local (nothing)
 :END:
 :CONTENTS:
 - [[#installation][Installation]]
 - [[#usage][Usage]]
 - [[#provided-tools][Provided Tools]]
-  - [[#read-file][read-file]]
-  - [[#list-directory][list-directory]]
-  - [[#create-file][create-file]]
-  - [[#create-directory][create-directory]]
-  - [[#view-buffer][view-buffer]]
-  - [[#edit-buffer][edit-buffer]]
+  - [[#filesystem][Filesystem]]
+  - [[#buffers][Buffers]]
 - [[#contributing][Contributing]]
   - [[#faster-iteration][Faster Iteration]]
 :END:
@@ -79,37 +75,39 @@ Use ~llm-tool-collection-get-tag~ to map over a list of tools with a specific ta
 See [[#provided-tools][Provided Tools]] for a list of tool names, descriptions, and categories.
 
 * Provided Tools
-** read-file
+** Filesystem
+*** read-file
 + Author :: @skissue
 + Tags :: filesystem, editing
 
 Allows the LLM to open a file and read its contents.
 
-** list-directory
+*** list-directory
 + Author :: @skissue
 + Tags :: filesystem
 
 Allows the LLM to list the contents of a directory.
 
-** create-file
+*** create-file
 + Author :: @skissue
 + Tags :: filesystem, editing
 
 Allows the LLM to create a new file with specified content. Returns an error if the file already exists.
 
-** create-directory
+*** create-directory
 + Author :: @skissue
 + Tags :: filesystem
 
 Allows the LLM to create a new directory. Returns an error if the directory already exists.
 
-** view-buffer
+** Buffers
+*** view-buffer
 + Author :: @ultronozm
 + Tags :: buffers, editing
 
 Allows the LLM to view the contents of a buffer. The LLM can optionally specify a line offset to start from, as well as a limit on the number of lines to return.
 
-** edit-buffer
+*** edit-buffer
 + Author :: @ultronozm
 + Tags :: buffers, editing
 
