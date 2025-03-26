@@ -10,7 +10,7 @@ A crowdsourced collection of tools to empower Large Language Models in Emacs.
 :CONTENTS:
 - [[#installation][Installation]]
 - [[#usage][Usage]]
-- [[#provided-tools][Provided Tools]]
+- [[#tool-list][Tool List]]
   - [[#filesystem][Filesystem]]
   - [[#buffers][Buffers]]
 - [[#contributing][Contributing]]
@@ -72,9 +72,9 @@ Use ~llm-tool-collection-get-tag~ to map over a list of tools with a specific ta
           (llm-tool-collection-get-tag 'editing))
 #+end_src
 
-See [[#provided-tools][Provided Tools]] for a list of tool names, descriptions, and categories.
+See [[#tool-list][Tool List]] for a list of tool names, descriptions, and categories.
 
-* Provided Tools
+* Tool List
 ** Filesystem
 *** read-file
 + Author :: @skissue
