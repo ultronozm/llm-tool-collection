@@ -55,25 +55,25 @@ Each function is called with one argument, the tool's plist definition.")
 SPECS should be a plist specifying the standard attributes of an LLM
 tool:
 
-- :name. The LLM-friendly name for the tool. If not set, the NAME
+- :name.  The LLM-friendly name for the tool.  If not set, the NAME
   argument (with dashes replaced with underscores) will be used by
   default.
 
-- :category. Required. A string categorizing the tool, such as
+- :category.  Required. A string categorizing the tool, such as
   \"filesystem\", \"buffers\", \"system\".
 
-- :tags. A list of symbols for tagging the tool to enable more precise
-  filtering. These can be arbitrary symbols, such as `buffers',
+- :tags.  A list of symbols for tagging the tool to enable more precise
+  filtering.  These can be arbitrary symbols, such as `buffers',
   `introspection', `programming', `editing'.
 
 SPECS may also contain other extra keywords used by specific clients.
-Conformant clients should ignore all unsupported keywords. Recommended
+Conformant clients should ignore all unsupported keywords.  Recommended
 examples:
 
-- :confirm. Boolean flag to indicate whether user confirmation should be
+- :confirm.  Boolean flag to indicate whether user confirmation should be
   requested before executing the tool (used by `gptel').
 
-- :include. Boolean flag to indicate whether the tool result should be
+- :include.  Boolean flag to indicate whether the tool result should be
   included as part of the LLM output (used by `gptel').
 
 ARGS is a list where each element is of the form
@@ -83,27 +83,27 @@ ARGS is a list where each element is of the form
 Arguments after the special symbol `&optional' are marked as optional.
 TYPE and further properties [...] can include:
 
-- :type. Required. One of the symbols string, number, integer, boolean,
+- :type.  Required.  One of the symbols string, number, integer, boolean,
   array, object, or null.
 
-- :enum. For enumerated types, a vector of strings representing allowed
-  values. Note that :type is still required even with enums.
+- :enum.  For enumerated types, a vector of strings representing allowed
+  values.  Note that :type is still required even with enums.
 
-- :items. Required if :type is array. Must be a plist including at least
+- :items.  Required if :type is array.  Must be a plist including at least
   the item's :type.
 
-- :properties. Required if :type is object. Must be a plist that can be
+- :properties.  Required if :type is object.  Must be a plist that can be
   serialized into a JSON object specification via `json-serialize', with
   the exception that :type specifications in this plist must be symbols.
 
-- :required. For object types, a vector of strings listing required
+- :required.  For object types, a vector of strings listing required
   object keys.
 
 For example, a weather tool might have ARGS defined as:
 
   ((location \"The city and state, e.g. San Francisco, CA\" :type string)
    &optional
-   (unit \"The unit of temperature, either 'celsius' or 'fahrenheit'\"
+   (unit \"The unit of temperature, either \\='celsius\\=' or \\='fahrenheit\\='\"
          :type string
          :enum [\"celsius\" \"fahrenheit\"]))
 
@@ -118,7 +118,7 @@ with args:
    (:name \"unit\"
     :type string
     :enum [\"celsius\" \"fahrenheit\"]
-    :description \"The unit of temperature, either 'celsius' or 'fahrenheit'\"
+    :description \"The unit of temperature, either \\='celsius\\=' or \\='fahrenheit\\='\"
     :optional t))
 
 DESCRIPTION is the tool's documentation string.
