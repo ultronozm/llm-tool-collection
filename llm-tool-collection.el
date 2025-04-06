@@ -59,7 +59,7 @@ tool:
   argument (with dashes replaced with underscores) will be used by
   default.
 
-- :category.  Required. A string categorizing the tool, such as
+- :category.  Required.  A string categorizing the tool, such as
   \"filesystem\", \"buffers\", \"system\".
 
 - :tags.  A list of symbols for tagging the tool to enable more precise
@@ -321,7 +321,7 @@ Returns selected lines joined with newlines."
   "Replace exactly one occurrence of OLD-STRING with NEW-STRING.
 BUFFER-OR-FILE is either a buffer object or a file path string."
   (when (string= old-string "")
-    (error "old_string cannot be empty"))
+    (error "`old_string' cannot be empty"))
   (let* ((is-file? (not (bufferp buffer-or-file)))
          (name (if is-file?
                    (concat "file " buffer-or-file)
@@ -348,7 +348,7 @@ BUFFER-OR-FILE is either a buffer object or a file path string."
                   (error "Could not find text '%s' to replace in %s"
                          old-string name))
                  ((> count 1)
-                  (error "Found %d matches for '%s' in %s, need exactly one."
+                  (error "Found %d matches for '%s' in %s, need exactly one"
                          count old-string name))
                  (t
                   (goto-char first-match-pos)
@@ -376,8 +376,7 @@ BUFFER-OR-FILE is either a buffer object or a file path string."
   ((file "Absolute or relative path to the file to modify" :type string)
    (old-string "Text to replace (must match exactly)" :type string)
    (new-string "Text to replace old_string with" :type string))
-  "Edits file by replacing exactly one occurrence \
-of non-empty OLD-STRING with NEW-STRING."
+  "Edit file by replacing exactly one match of OLD-STRING with NEW-STRING."
   (let ((expanded-file (expand-file-name file)))
     (unless (file-exists-p expanded-file)
       (error "File does not exist: %s" expanded-file))
@@ -532,7 +531,7 @@ Error: %s"
                         (format " (visiting file: %s)" file-name))))
                    sorted-buffers
                    "\n")
-      (error "No user-relevant buffers found."))))
+      (error "No user-relevant buffers found"))))
 
 (llm-tool-collection-deftool bash
   (:category "system" :tags (system execution) :confirm t)
@@ -542,7 +541,7 @@ Signals an error if the command fails (non-zero exit code)
 or if process execution itself fails. Handles C-g interruption.
 WARNING: Executes arbitrary shell commands. Review carefully."
   (let ((output-buffer (generate-new-buffer " bash-output")))
-    (condition-case err
+    (condition-case nil
         (unwind-protect
             (let* ((exit-code (call-process "bash" nil output-buffer nil
                                             "-c" command))
