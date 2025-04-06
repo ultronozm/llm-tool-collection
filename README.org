@@ -13,11 +13,16 @@ A crowdsourced collection of tools to empower Large Language Models in Emacs.
 - [[#tool-list][Tool List]]
   - [[#filesystem][Filesystem]]
   - [[#buffers][Buffers]]
+  - [[#search][Search]]
+  - [[#system][System]]
 - [[#contributing][Contributing]]
   - [[#faster-iteration][Faster Iteration]]
 :END:
 
 * Installation
+:PROPERTIES:
+:CUSTOM_ID: installation
+:END:
 This package is not yet in any repositories. Install it with your favorite from-Git method!
 
 Quick and dirty: clone the repository and add it to ~load-path~.
@@ -27,6 +32,9 @@ Quick and dirty: clone the repository and add it to ~load-path~.
 #+end_src
 
 * Usage
+:PROPERTIES:
+:CUSTOM_ID: usage
+:END:
 Quick and dirty: register every tool.
 #+begin_src elisp
   ;; For gptel:
@@ -75,7 +83,13 @@ Use ~llm-tool-collection-get-tag~ to map over a list of tools with a specific ta
 See [[#tool-list][Tool List]] for a list of tool names, descriptions, and categories.
 
 * Tool List
+:PROPERTIES:
+:CUSTOM_ID: tool-list
+:END:
 ** Filesystem
+:PROPERTIES:
+:CUSTOM_ID: filesystem
+:END:
 *** read-file
 + Author :: @skissue
 + Tags :: filesystem, editing
@@ -100,20 +114,94 @@ Allows the LLM to create a new file with specified content. Returns an error if 
 
 Allows the LLM to create a new directory. Returns an error if the directory already exists.
 
+*** view-file
++ Author :: @ultronozm
++ Tags   :: filesystem, editing, introspection
+
+Views the contents of a file.  Optional /offset/ and /limit/ let you show a slice of lines.
+
+*** edit-file
++ Author :: @ultronozm
++ Tags   :: filesystem, editing
+
+Replaces **exactly one** occurrence of a string in a file with a new string.
+
+*** glob
++ Author :: @ultronozm
++ Tags   :: filesystem, search
+
+Expands a Unix‑style glob pattern (e.g. =*.el=) and returns the matching paths.
+
+*** replace-file
++ Author :: @ultronozm
++ Tags   :: filesystem, editing
+
+Completely overwrites a file with the supplied content.
+
+*** ls
++ Author :: @ultronozm
++ Tags   :: filesystem
+
+Lists directory contents, with optional regexps to ignore.
+
 ** Buffers
+:PROPERTIES:
+:CUSTOM_ID: buffers
+:END:
 *** view-buffer
 + Author :: @ultronozm
-+ Tags :: buffers, editing
++ Tags   :: buffers, editing, introspection
 
 Allows the LLM to view the contents of a buffer. The LLM can optionally specify a line offset to start from, as well as a limit on the number of lines to return.
 
 *** edit-buffer
 + Author :: @ultronozm
-+ Tags :: buffers, editing
++ Tags   :: buffers, editing
 
-Allows the LLM to edit a buffer by replacing a search string with a replacement string. Returns an error if the text to replace is not found or is found multiple times.
+Replaces **exactly one** occurrence of a string in a buffer.
+
+*** replace-buffer
++ Author :: @ultronozm
++ Tags   :: buffers, editing
+
+Overwrites an entire buffer with new content.
+
+*** buffer-search
++ Author :: @ultronozm
++ Tags   :: buffers, search, introspection
+
+Regex search inside a buffer; returns matching line numbers plus text.
+
+*** list-buffers
++ Author :: @ultronozm
++ Tags   :: buffers, introspection
+
+Lists user‑relevant buffers, excluding internal/temp buffers.
+
+** Search
+:PROPERTIES:
+:CUSTOM_ID: search
+:END:
+*** grep
++ Author :: @ultronozm
++ Tags   :: filesystem, search, system
+
+Recursive =grep -E= with line numbers.  Supports /include/ glob and /path/ root.
+
+** System
+:PROPERTIES:
+:CUSTOM_ID: system
+:END:
+*** bash
++ Author :: @ultronozm
++ Tags   :: system, execution
+
+Runs an arbitrary Bash command and returns its standard output (errors if exit is nonzero).
 
 * Contributing
+:PROPERTIES:
+:CUSTOM_ID: contributing
+:END:
 Contributions to this project are welcome and encouraged! After all, this collection can't be crowdsourced if there's no crowd 🙃.
 
 To write a new tool, use the ~llm-tool-collection-deftool~ macro. For details on its usage, see its docstring as well as the existing tools.
@@ -142,6 +230,9 @@ For non-trivial/complex tools, it's recommended to include a short screencast or
 When ready, submit a PR!
 
 ** Faster Iteration
+:PROPERTIES:
+:CUSTOM_ID: faster-iteration
+:END:
 There will likely be many iterations necessary to get a tool to a good state. To speed up the feedback loop, functions to immediately update the tools in an LLM interface can be added to ~llm-tool-collection-post-define-functions~. For example, to immediately add (or re-add) a tool to [[https://github.com/karthink/gptel/][gptel]] upon re-evaluating the definition:
 
 #+begin_src elisp
